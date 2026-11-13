@@ -1,0 +1,6 @@
+// Root build file: shared repositories only. All real configuration lives in :neopedro.
+allprojects {
+    repositories {
+        mavenCentral() // Pedro Pathing publishes com.pedropathing:core here.
+    }
+}

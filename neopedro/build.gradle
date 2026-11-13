@@ -1,0 +1,68 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'dev.neopedro'
+// JitPack exports the git tag as VERSION; local builds fall back to a snapshot.
+version = System.getenv('VERSION') ?: '0.1.0-SNAPSHOT'
+
+// Keep in step with the Pedro Pathing release you run on your robot.
+ext.pedroVersion = '3.0.2'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 8 // fail the build if anything newer than the Java 8 API is used
+    options.compilerArgs += ['-Xlint:all', '-Xlint:-options']
+}
+
+dependencies {
+    // api: users call Follower, Pose, Path... directly, so Pedro must be on their classpath too.
+    api "com.pedropathing:core:${pedroVersion}"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+// examples/ is compiled (so it can never rot) but is not packaged into the library.
+sourceSets {
+    examples {
+        java.srcDir '../examples'
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+    }
+}
+// Tests run the example end to end, so it is on the test classpath (but still not in the jar).
+sourceSets.test.compileClasspath += sourceSets.examples.output
+sourceSets.test.runtimeClasspath += sourceSets.examples.output
+tasks.named('compileTestJava') { dependsOn 'examplesClasses' }
+tasks.named('check') { dependsOn 'compileExamplesJava' }
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            from components.java
+            groupId = 'dev.neopedro'
+            artifactId = 'neopedro'
+            pom {
+                name = 'NeoPedro'
+                description = 'A declarative step/sequencing layer on top of Pedro Pathing for FTC autonomous.'
+                licenses {
+                    license {
+                        name = 'BSD 3-Clause License'
+                        url = 'https://opensource.org/licenses/BSD-3-Clause'
+                    }
+                }
+            }
+        }
+    }
+}

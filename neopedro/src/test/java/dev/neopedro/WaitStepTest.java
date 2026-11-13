@@ -63,4 +63,17 @@ class WaitStepTest {
     void rejectsNegativeDuration() {
         assertThrows(IllegalArgumentException.class, () -> new WaitStep(-1));
     }
+
+    @Test
+    void staysDoneEvenIfTheConditionFlickersBackToFalse() {
+        AtomicBoolean sensor = new AtomicBoolean(true);
+        WaitStep wait = new WaitStep(sensor::get);
+        wait.start();
+        wait.update();
+        assertTrue(wait.isDone());
+
+        sensor.set(false);
+        wait.update();
+        assertTrue(wait.isDone());
+    }
 }

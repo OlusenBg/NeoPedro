@@ -64,9 +64,12 @@ public class WaitStep implements Step {
         done = false;
     }
 
-    /** Checks the condition and the clock. */
+    /** Checks the condition and the clock. Once the wait is over it stays over and reads no more sensors. */
     @Override
     public void update() {
+        if (done) {
+            return;
+        }
         done = condition.getAsBoolean() || timer.seconds() >= timeoutSeconds;
     }
 

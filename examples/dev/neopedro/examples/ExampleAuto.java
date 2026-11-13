@@ -20,20 +20,9 @@ import java.util.function.BooleanSupplier;
 /**
  * A complete autonomous using every NeoPedro feature. Not part of the library.
  *
- * <p>On a real robot the {@link #run} loop below is the body of your {@code LinearOpMode}:
- *
- * <pre>{@code
- * &#64;Autonomous(name = "Example Auto")
- * public class ExampleOpMode extends LinearOpMode {
- *     public void runOpMode() {
- *         Follower follower = Constants.createFollower(hardwareMap);
- *         follower.setPose(ExampleAuto.START);
- *         AutoSequence sequence = ExampleAuto.build(follower, new MyRobot(hardwareMap));
- *         waitForStart();
- *         ExampleAuto.run(follower, sequence, this::opModeIsActive);
- *     }
- * }
- * }</pre>
+ * <p>On a real robot the {@link #run} loop below is the body of your {@code LinearOpMode}'s
+ * {@code runOpMode()}: create the follower, call {@code follower.setPose(START)}, build the sequence with
+ * {@link #build}, call {@code waitForStart()}, then call {@link #run}. See the README for the full OpMode.
  */
 public final class ExampleAuto {
     // Field positions in inches; headings in radians (Pedro's convention).
